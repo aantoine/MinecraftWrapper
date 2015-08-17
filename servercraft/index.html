@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Server-Craft</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="bootstrap/css/dashboard.css" rel="stylesheet">
+
+    <script type="text/javascript">
+      function getServers(){
+        var xmlhttp;
+        if (window.XMLHttpRequest) {
+          xmlhttp=new XMLHttpRequest();
+        }else{
+          xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        xmlhttp.onreadystatechange = function(){
+          if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+            document.getElementById('servers-table').innerHTML = xmlhttp.responseText;
+          }
+        }
+
+        xmlhttp.open("GET","php/servers.php", true);
+        xmlhttp.send();
+      }
+
+      function show_details(server, status){
+        document.getElementById('server').value = server;
+        document.DetailForm.submit();
+      }
+    </script>
+  </head>
+
+  <body onload="getServers()">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Server-Craft</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Servers</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <form id="form" action="php/upload.php" method="POST" enctype="multipart/form-data">
+            <input type="file" id="my_file" name="fileToUpload" style="display:none">
+          </form>
+          <ul class="nav nav-sidebar">
+            <li class="active"><a>Servers <span class="sr-only">(current)</span></a></li>
+            <li><a href="#">Create</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="#" id='get_jar'>Add Jar</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">Servers</h1>
+
+          <div class="table-responsive">
+            <table class="table table-striped" id ="servers-table">
+
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id ="form">
+      <form action='server-detail.php' method='GET' name='DetailForm'>
+          <input id="server" type='hidden' name='server' value=''>
+      </form>
+    </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script>
+      document.getElementById('get_jar').onclick = function() {
+        document.getElementById('my_file').click();
+      };
+      document.getElementById("my_file").onchange = function() {
+    document.getElementById("form").submit();
+};
+    </script>
+  </body>
+</html>

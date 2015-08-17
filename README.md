@@ -6,7 +6,7 @@ The admin can create, destroy and change the properties of the servers. Also he 
 
 TODO:
 
--Login
--Permitir usuarios levantar server caido
--crear servers
--mover configuraciones a base de datos
+- Login
+- Permitir usuarios levantar server caido
+- crear servers
+- mover configuraciones a base de datos

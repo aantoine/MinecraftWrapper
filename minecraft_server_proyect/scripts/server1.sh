@@ -14,11 +14,10 @@
 ### END INIT INFO
 
 #Settings
-SERVICE='minecraft_server1'
+SERVICENAME='minecraft_'
 JAR='minecraft_server.1.8.4.jar'
 SERVICEPATH='../../jars/minecraft_server.1.8.4.jar'
 OPTIONS='nogui'
-WORLD='world'
 SCREENNAME='minecraft_server1'
 MCPATH='/home/agustinantoine/minecraft-servers/servers/server1'
 LOGPATH='/home/agustinantoine/minecraft-servers/servers/server1/logs'
@@ -27,6 +26,7 @@ MAXHEAP=2048
 MINHEAP=1024
 INVOCATION="java -Xmx${MAXHEAP}M -Xms${MINHEAP}M \
 -jar $SERVICEPATH $OPTIONS" 
+SERVERS='/servers/'
 
 ME=`whoami`
 as_user() {
@@ -38,14 +38,18 @@ as_user() {
 }
  
 mc_start() {
-  if  pgrep -f $SERVICE > /dev/null
+  if  pgrep -f $SERVICENAME$2 > /dev/null
   then
     echo "warning"
   else
-    cd $MCPATH
-    as_user "cd $MCPATH && screen -dmS ${SCREENNAME} $INVOCATION"
+    local PLACE=$1$SERVERS$2
+    #echo $PLACE
+    #cd $PLACE
+    local SERVICE=$SERVICENAME$2
+    echo $SERVICE
+    as_user "cd $PLACE && screen -dmS ${SERVICE} $INVOCATION"
     sleep 7
-    if pgrep -f $SERVICE > /dev/null
+    if pgrep -f $SERVICENAME$2 > /dev/null
     then
       echo "success"
     else
@@ -53,40 +57,17 @@ mc_start() {
     fi
   fi
 }
- 
-mc_saveoff() {
-  if pgrep -f $SERVICE > /dev/null
-  then
-    echo "$SERVICE is running... suspending saves"
-    as_user "$SCREEN -S ${SCREENNAME} -X eval 'stuff \"say SERVER BACKUP STARTING. Server going readonly...\"\015'"
-    as_user "$SCREEN -S ${SCREENNAME} -X eval 'stuff \"save-off\"\015'"
-    as_user "$SCREEN -S ${SCREENNAME} -X eval 'stuff \"save-all\"\015'"
-    sync
-    sleep 10
-  else
-    echo "$SERVICE is not running. Not suspending saves."
-  fi
-}
-
-mc_saveon() {
-  if pgrep -f $SERVICE > /dev/null
-  then
-    echo "$SERVICE is running... re-enabling saves"
-    as_user "$SCREEN -S ${SCREENNAME} -X eval 'stuff \"save-on\"\015'"
-    as_user "$SCREEN -S ${SCREENNAME}$ -X eval 'stuff \"say SERVER BACKUP ENDED. Server going read-write...\"\015'"
-  else
-    echo "$SERVICE is not running. Not resuming saves."
-  fi
-}
 
 mc_stop() {
+  local SERVICE=$SERVICENAME$1
+
   if pgrep -f $SERVICE > /dev/null
   then
-    as_user "screen -S ${SCREENNAME} -X eval 'stuff \"say SERVER SHUTTING DOWN IN 10 SECONDS. Saving map...\"\015'"
-    as_user "screen -S ${SCREENNAME} -X eval 'stuff \"save-all\"\015'"
+    as_user "screen -S ${SERVICE} -X eval 'stuff \"say SERVER SHUTTING DOWN IN 10 SECONDS. Saving map...\"\015'"
+    as_user "screen -S ${SERVICE} -X eval 'stuff \"save-all\"\015'"
     sleep 10
     #as_user "screen -S ${SCREENNAME} -X quit"
-    as_user "screen -S ${SCREENNAME} -X eval 'stuff \"stop\"\015'"
+    as_user "screen -S ${SERVICE} -X eval 'stuff \"stop\"\015'"
     sleep 5
 
      if pgrep -f $SERVICE > /dev/null
@@ -100,26 +81,6 @@ mc_stop() {
     echo "warning"
   fi
 } 
-
-mc_backup() {
-   mc_saveoff
-   
-   NOW=`date "+%Y-%m-%d_%Hh%M"`
-   BACKUP_FILE="$BACKUPPATH/${WORLD}_${NOW}.tar"
-   echo "Backing up minecraft world..."
-   #as_user "cd $MCPATH && cp -r $WORLD $BACKUPPATH/${WORLD}_`date "+%Y.%m.%d_%H.%M"`"
-   as_user "tar -C \"$MCPATH\" -cf \"$BACKUP_FILE\" $WORLD"
-
-   echo "Backing up $SERVICE"
-   as_user "tar -C \"$MCPATH\" -rf \"$BACKUP_FILE\" $SERVICE"
-   #as_user "cp \"$MCPATH/$SERVICE\" \"$BACKUPPATH/minecraft_server_${NOW}.jar\""
-
-   mc_saveon
-
-   echo "Compressing backup..."
-   as_user "gzip -f \"$BACKUP_FILE\""
-   echo "Done."
-}
 
 mc_command() {
   command="$1";
@@ -142,30 +103,25 @@ mc_log() {
 case "$1" in
   start)
     #echo "Start!"
-    mc_start
+    mc_start $2 $3 $4 $5 $6
     ;;
   stop)
-    mc_stop
+    mc_stop $3
     ;;
   restart)
-    mc_stop
-    mc_start
-    ;;
-  backup)
-    #mc_backup
-    ;;
-  data)
-    echo "$JAR $MINHEAP $MAXHEAP"
+    mc_stop $3
+    mc_start $2 $3 $4 $5 $6
     ;;
   log)
     mc_log
     ;;
   status)
-    if pgrep -f $SERVICE > /dev/null
+    #echo $SERVICENAME$3
+    if pgrep -f $SERVICENAME$3 > /dev/null
     then
-      echo "$SERVICE online"
+      echo "$SERVICENAME$3 online"
     else
-      echo "$SERVICE offline"
+      echo "$SERVICENAME$3 offline"
     fi
     ;;
   command)

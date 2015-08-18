@@ -1,5 +1,5 @@
 <?php
-	$mc = "/var/www/html/MinecraftWrapper/minecraft_server_proyect";
+	$mc = "/var/www/MinecraftWrapper/minecraft_server_proyect";
 	$dir = $mc."/servers";
 	$ficheros  = scandir($dir);
 	 

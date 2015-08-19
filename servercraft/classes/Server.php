@@ -52,10 +52,49 @@ class Server
         }
 
         return $res;
+    }
+
+    public function getProperties($server){
+        if (!$this->db_connection->connect_errno){
+            $name = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
+            $sql = "SELECT jars.jar_name AS jar, servers.server_xms AS xms, servers.server_xmx AS xmx,".
+                    "servers.server_world AS world ".
+                    "FROM servers ".
+                    "INNER JOIN jars ".
+                    "ON jars.jar_id=servers.server_jar ".
+                    "WHERE server_name = '".$name."';";
+
+            $query_properties = $this->db_connection->query($sql);
+            
+            return $query_properties->fetch_assoc();
+        }
+        else{
+            $this->errors[] = "Sorry, no database connection.";
+        }
 
     }
 
-    private function getStatus($server){
+    public function getJars(){
+        $res=[];
+        if (!$this->db_connection->connect_errno){
+            $sql = "SELECT jar_name AS jar FROM jars;";
+
+            $query_jars = $this->db_connection->query($sql);
+
+            for ($num_fila = 0; $num_fila < $query_jars->num_rows; $num_fila++) {
+                $query_jars->data_seek($num_fila);
+                $fila = $query_jars->fetch_assoc();
+                echo($fila);
+                $res[]=$fila['jar'];
+            }
+        }
+        else{
+            $this->errors[] = "Sorry, no database connection.";
+        }
+        return $res;
+    }
+
+    public function getStatus($server){
     	#echo($server);
         $script = $this->mc_path."/scripts";
         $old_path = getcwd();

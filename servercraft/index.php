@@ -1,5 +1,8 @@
 <?php
 
+// include the configs / constants for the database connection
+require_once("config/db.php");
+
 //HEADER
 require_once("views/header.html");
 
@@ -17,7 +20,9 @@ require_once("views/index/nav.php");
 //CONTENT
 if (isset($_GET["jar"]))        require_once("views/index/jar.php");
 elseif (isset($_GET["create"])) require_once("views/index/create.php");
-else                            require_once("views/index/server.php");
+else{
+	require_once("views/index/server.php");
+}
 
 
 //FOOTER

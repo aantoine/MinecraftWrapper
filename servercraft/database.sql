@@ -14,9 +14,11 @@ CREATE TABLE IF NOT EXISTS `servers` (
   `server_xmx` int(11) NOT NULL,
   `server_xms` int(11) NOT NULL,
   `server_world` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `server_directory` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`server_id`),
   FOREIGN KEY (`server_jar`) REFERENCES jars(`jar_id`),
-  UNIQUE KEY `server_name` (`server_name`)
+  UNIQUE KEY `server_name` (`server_name`),
+  UNIQUE KEY `server_directory` (`server_directory`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='server data';
 
 CREATE TABLE IF NOT EXISTS `jars` (
@@ -34,11 +36,11 @@ VALUES('Minecraft 1.8.4', 'minecraft_server.1.8.4.jar');
 INSERT INTO `jars` (jar_name, file)
 VALUES('Minecraft X', 'Minecraft.jar');
 
-INSERT INTO `servers` (server_name, server_jar, server_xmx, server_xms, server_world)
-VALUES('server1', 1, 2048, 1024, 'vanilla');
+INSERT INTO `servers` (server_name, server_jar, server_xmx, server_xms, server_world, server_directory)
+VALUES('server1', 1, 2048, 1024, 'vanilla', 'server1');
 
-INSERT INTO `servers` (server_name, server_jar, server_xmx, server_xms, server_world)
-VALUES('testing', 1, 2048, 1024, 'world');
+INSERT INTO `servers` (server_name, server_jar, server_xmx, server_xms, server_world, server_directory)
+VALUES('testing', 1, 2048, 1024, 'world', 'testing');
 
 SELECT jar_name AS jar, server_xms AS xms, server_xmx AS xmx,
 server_world AS world FROM servers WHERE server_name = 'server1';

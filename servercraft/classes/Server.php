@@ -25,6 +25,13 @@ class Server
         $this->mc_path = $res['opt'];
         #echo($this->mc_path);
 
+        if (isset($_POST["nameUpdate"])) {
+            $this->nameUpdate();
+        }
+        if (isset($_POST["javaUpdate"])) {
+            $this->javaUpdate();
+        }
+
     }
 
     public function getServers(){
@@ -33,7 +40,7 @@ class Server
 
         // if no connection errors (= working database connection)
         if (!$this->db_connection->connect_errno){
-        	$sql = "SELECT server_name AS name FROM servers;";
+        	$sql = "SELECT server_name AS name, server_directory AS dir FROM servers;";
             $query_server = $this->db_connection->query($sql);
             
             //for every server in the database 
@@ -43,7 +50,7 @@ class Server
 			    $fila = $query_server->fetch_assoc();
                 //add to the result array its name and its status
 			    $array["name"] = $fila['name'];
-                $array["status"] = $this->getStatus($fila['name']);
+                $array["status"] = $this->_getStatus($fila['dir']);
                 $res[]=$array;
 			}
         }
@@ -57,7 +64,7 @@ class Server
     public function getProperties($server){
         if (!$this->db_connection->connect_errno){
             $name = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
-            $sql = "SELECT jars.jar_name AS jar, servers.server_xms AS xms, servers.server_xmx AS xmx,".
+            $sql = "SELECT jars.jar_name AS jar, jars.file AS file, servers.server_xms AS xms, servers.server_xmx AS xmx,".
                     "servers.server_world AS world ".
                     "FROM servers ".
                     "INNER JOIN jars ".
@@ -71,21 +78,20 @@ class Server
         else{
             $this->errors[] = "Sorry, no database connection.";
         }
-
     }
 
     public function getJars(){
         $res=[];
         if (!$this->db_connection->connect_errno){
-            $sql = "SELECT jar_name AS jar FROM jars;";
+            $sql = "SELECT jar_name AS jar, file  FROM jars;";
 
             $query_jars = $this->db_connection->query($sql);
 
             for ($num_fila = 0; $num_fila < $query_jars->num_rows; $num_fila++) {
                 $query_jars->data_seek($num_fila);
                 $fila = $query_jars->fetch_assoc();
-                echo($fila);
-                $res[]=$fila['jar'];
+                #echo($fila['jar']);
+                $res[$fila['file']]=$fila['jar'];
             }
         }
         else{
@@ -95,12 +101,28 @@ class Server
     }
 
     public function getStatus($server){
+        if (!$this->db_connection->connect_errno){
+            $sql = "SELECT server_directory AS dir FROM servers WHERE server_name='".$server."';";
+            $query_path = $this->db_connection->query($sql);
+            $res = $query_path->fetch_assoc();
+            $dir = $res['dir'];
+
+            return $this->_getStatus($dir);
+
+        }
+        else{
+            $this->errors[] = "Sorry, no database connection.";
+        }
+
+    }
+
+    private function _getStatus($file){
     	#echo($server);
         $script = $this->mc_path."/scripts";
         $old_path = getcwd();
         chdir($script);
         //executes status command, outupt = 'server status'
-        $output = shell_exec('./main.sh status '.$server);
+        $output = shell_exec('./main.sh status '.$file);
         $res = explode(" ", $output);
         //obtain status from output
         $status = substr($res[1], 0, strlen($res[1])-1);
@@ -109,12 +131,102 @@ class Server
 
     public function turnOn($server){
 
-    }
-    public function turnOff($server){
-        
-    }
-    public function update($server, $jar, $xms, $xmx, $world){
+        if (!$this->db_connection->connect_errno){
+            $sql = "SELECT server_directory AS dir FROM servers WHERE server_name='".$server."';";
+            $query_path = $this->db_connection->query($sql);
+            $res = $query_path->fetch_assoc();
+            $dir = $res['dir'];
 
+            $properties = $this->getProperties($server);
+            $jar = $properties['file'];
+            $xms = $properties['xms'];
+            $xmx = $properties['xmx'];
+
+            $old_path = getcwd();
+
+            $scripts = ($this->mc_path)."/scripts";
+            #echo($scripts);
+            #echo("<br>");
+            chdir($scripts);    
+            
+            #echo('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
+            $output = shell_exec('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
+            chdir($old_path);
+            return $output;
+
+        }
+        else{
+            $this->errors[] = "Sorry, no database connection.";
+        }
+    }
+
+    public function turnOff($server){    
+        if (!$this->db_connection->connect_errno){
+            $sql = "SELECT server_directory AS dir FROM servers WHERE server_name='".$server."';";
+            $query_path = $this->db_connection->query($sql);
+            $res = $query_path->fetch_assoc();
+            $dir = $res['dir'];
+
+            $old_path = getcwd();
+
+            $scripts = ($this->mc_path)."/scripts";
+            #echo($scripts);
+            #echo("<br>");
+            chdir($scripts);    
+            
+            #echo('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
+            $output = shell_exec('./server1.sh stop '.$dir);
+            chdir($old_path);
+            return $output;
+
+        }
+        else{
+            $this->errors[] = "Sorry, no database connection.";
+        }
+    }
+
+    private function javaUpdate(){
+        if (!$this->db_connection->connect_errno){
+            $server = $this->db_connection->real_escape_string(strip_tags($_GET["server"], ENT_QUOTES));
+            $xms = $this->db_connection->real_escape_string(strip_tags($_POST["xms_prop"], ENT_QUOTES));
+            $xmx = $this->db_connection->real_escape_string(strip_tags($_POST["xmx_prop"], ENT_QUOTES));
+
+            $file = $this->db_connection->real_escape_string(strip_tags($_POST["jar_prop"], ENT_QUOTES));
+
+            $jar_sql = "SELECT jar_id AS id FROM jars WHERE file='".$file."';";
+            $jar_query = $this->db_connection->query($jar_sql);
+            $res = $jar_query->fetch_assoc();
+            $id = $res['id'];
+
+            $sql = "UPDATE servers SET server_jar='".$id."', server_xmx='".$xmx."', server_xms='".$xms."' WHERE server_name='".$server."';";
+            #echo($sql);
+            $query_jars = $this->db_connection->query($sql);
+        }
+        else{
+            $this->errors[] = "Sorry, no database connection.";
+        }
+    }
+
+    private function nameUpdate(){
+        if (!$this->db_connection->connect_errno){
+
+            $sql = "SELECT * FROM servers WHERE server_name='".$name."';";
+            $query_check_server_name = $this->db_connection->query($sql);
+
+            if ($query_check_server_name->num_rows == 1) {
+                $this->errors[] = "Server name must be unique!";
+            } else {
+                $name = $this->db_connection->real_escape_string(strip_tags($_GET["server"], ENT_QUOTES));
+                $server = $this->db_connection->real_escape_string(strip_tags($_POST["old_name"], ENT_QUOTES));
+                $sql = "UPDATE servers SET server_name='".$name."' WHERE server_name='".$server."';";
+                #echo($sql);
+                $query_jars = $this->db_connection->query($sql);
+
+            }
+        }
+        else{
+            $this->errors[] = "Sorry, no database connection.";
+        }
     }
 
 }

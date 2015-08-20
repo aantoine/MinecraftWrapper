@@ -49,7 +49,7 @@ mc_start() {
     local JAR=$3
 
     local INVOCATION="java -Xmx${MAXHEAP}M -Xms${MINHEAP}M -jar $SERVICEPATH$JAR $OPTIONS"
-    echo $INVOCATION
+    #echo $INVOCATION
     as_user "cd $PLACE && screen -dmS ${SERVICE} $INVOCATION"
     sleep 7
     if pgrep -f $SERVICENAME$2 > /dev/null

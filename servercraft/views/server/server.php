@@ -2,9 +2,11 @@
 $server_name = $server;
 
 require_once("classes/Server.php");
+require_once("classes/Properties.php");
 require_once("classes/HtmlCreator.php");
 
 $server_handle = new Server();
+$properties_handle = new Properties();
 foreach ($server_handle->errors as $key => $value) {
   echo '<script language="javascript">';
   echo ('alert("'.$value.'")');
@@ -13,17 +15,40 @@ foreach ($server_handle->errors as $key => $value) {
 $html_creator = new HtmlCreator();
 $status = $server_handle->getStatus($server_name);
 
-$properties = $server_handle->getProperties($server_name);
-
+$jar_properties = $server_handle->getProperties();
 $jars = $server_handle->getJars();
-#echo($server_handle->errors);
-#print_r($jars);
+$jar = $jar_properties['jar'];
+$xms = $html_creator->createInput("xms_prop",$jar_properties['xms']);
+$xmx = $html_creator->createInput("xmx_prop",$jar_properties['xmx']);
+$jar_selector = $html_creator->createSelector($jars, $jar, 'jar_prop', True, 'width:175px');
 
-$jar = $properties['jar'];
-$xms = $html_creator->createInput("xms_prop",$properties['xms']);
-$xmx = $html_creator->createInput("xmx_prop",$properties['xmx']);
+$properties = $properties_handle->getProperties();
 
-$jar_selector = $html_creator->createSelector($jars, $jar, 'jar_prop','width:175px');
+$gamemode=[
+    "0" => "0 - Survival",
+    "1" => "1 - Creative",
+    "2" => "2 - Adventure",
+    "3" => "3 - Spectator"
+];
+$gamemode_selector = $html_creator->createSelector($gamemode,
+                       $properties['gamemode'], 'gamemode',False,'width:175px');
+
+$difficulty=[
+    "0" => "0 - Peaceful",
+    "1" => "1 - Easy",
+    "2" => "2 - Normal",
+    "3" => "3 - Hard"
+];
+$difficulty_selector = $html_creator->createSelector($difficulty,
+                       $properties['difficulty'], 'difficulty',False,'width:175px');
+
+$online=[
+    "true" => "True",
+    "false" => "False"
+];
+
+$online_selector = $html_creator->createSelector($online,
+                       $properties['online-mode'], 'online-mode',False,'width:175px');
 ?>
 
 <script type="text/javascript">
@@ -109,7 +134,8 @@ function changeFormAction(){
       </tbody>
     </table>
   </form>
-  <form id= "save-form" method="post" action=<?php echo("server-detail.php?server=".$server_name);?>>
+  <form id= "save-form" method="post" action=<?php echo("server.php?server=".$server_name);?>>
+    <input type="hidden" name="propertiesUpdate" id="propertiesUpdate" value="propertiesUpdate">
     <hr>
     <h4><u>Properties</u></h4>
     <table class="table table-striped" id="server-prop" style="width:auto">
@@ -117,62 +143,54 @@ function changeFormAction(){
         <tr>
           <td class="firstRow">Max Players</td>
           <td class="secondRow">
-            <input name="max-players" id="max-players" type="text" value="...">
+            <input name="max-players" id="max-players" type="text" 
+              value=<?php echo($properties['max-players'])?>>
           </td>
         </tr>
         <tr>
           <td>Port</td>
           <td>
-            <input name="server-port" id="server-port" type="text" value="...">
+            <input name="server-port" id="server-port" type="text"
+              value=<?php echo($properties['server-port'])?>>
           </td>
         </tr>
         <tr>
           <td>Level Name</td>
           <td>
-            <input name="level-name" id="level-name" type="text" value="...">
+            <input name="level-name" id="level-name" type="text"
+              value=<?php echo($properties['level-name'])?>>
           </td>
         </tr>
         <tr>
           <td>Seed</td>
           <td>
-            <input name="level-seed" id="level-seed" type="text" value="...">
+            <input name="level-seed" id="level-seed" type="text"
+              value=<?php echo($properties['level-seed'])?>>
           </td>
         </tr>
         <tr>
           <td>Game-Mode</td>
           <td>
-            <select name="gamemode" id="gamemode" style="width:175px">
-              <option value="0">0 - Survival</option>
-              <option value="1">1 - Creative</option>
-              <option value="2">2 - Adventure</option>
-              <option value="3">3 - Spectator</option>
-            </select>
+            <?php echo($gamemode_selector);?>
           </td>
         </tr>
         <tr>
           <td>Difficulty</td>
           <td>
-            <select name="difficulty" id="difficulty" style="width:175px">
-              <option value="0">0 - Peaceful</option>
-              <option value="1">1 - Easy</option>
-              <option value="2">2 - Normal</option>
-              <option value="3">3 - Hard</option>
-            </select>
+            <?php echo($difficulty_selector);?>
           </td>
         </tr>
         <tr>
           <td>Online-Mode</td>
           <td>
-            <select name="online-mode" id="online-mode" style="width:175px">
-              <option value="true">True</option>
-              <option value="false">False</option>
-            </select>
+            <?php echo($online_selector);?>
           </td>
         </tr>
         <tr>
           <td>Motd</td>
           <td>
-            <input name="motd" id="motd" type="text" value="...">
+            <input name="motd" id="motd" type="text"
+              value=<?php echo($properties['motd'])?>>
           </td>
         </tr>
       </tbody>

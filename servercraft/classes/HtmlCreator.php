@@ -20,13 +20,16 @@ class HtmlCreator
         $this->mc_path = $res['opt'];
     }
 
-    public function createSelector($opt, $selected, $id, $style = ""){
+    public function createSelector($opt, $selected, $id, $cmpValue, $style = ""){
     	$html="<select name='".$id."' id='".$id."' style=".$style.">\n";
-
+        echo($selected);
     	foreach ($opt as $i => $value){
-    		if(strcmp($value , $selected)==0){
+    		if(strcmp($value , $selected)==0 && $cmpValue){
 		      	$html=$html."<option selected value='".$i."'>".$value."</option>\n";
 		    }
+            elseif(strcmp($i , $selected)==0 && !$cmpValue){
+                $html=$html."<option selected value='".$i."'>".$value."</option>\n";   
+            }
 		    else{
     			$html=$html."<option value='".$i."'>".$value."</option>\n";
     		}

@@ -61,8 +61,9 @@ class Server
         return $res;
     }
 
-    public function getProperties($server){
+    public function getProperties(){
         if (!$this->db_connection->connect_errno){
+            $server = $this->db_connection->real_escape_string(strip_tags($_GET["server"], ENT_QUOTES));
             $name = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
             $sql = "SELECT jars.jar_name AS jar, jars.file AS file, servers.server_xms AS xms, servers.server_xmx AS xmx,".
                     "servers.server_world AS world ".
@@ -209,14 +210,13 @@ class Server
 
     private function nameUpdate(){
         if (!$this->db_connection->connect_errno){
-
+            $name = $this->db_connection->real_escape_string(strip_tags($_GET["server"], ENT_QUOTES));
             $sql = "SELECT * FROM servers WHERE server_name='".$name."';";
             $query_check_server_name = $this->db_connection->query($sql);
 
             if ($query_check_server_name->num_rows == 1) {
                 $this->errors[] = "Server name must be unique!";
             } else {
-                $name = $this->db_connection->real_escape_string(strip_tags($_GET["server"], ENT_QUOTES));
                 $server = $this->db_connection->real_escape_string(strip_tags($_POST["old_name"], ENT_QUOTES));
                 $sql = "UPDATE servers SET server_name='".$name."' WHERE server_name='".$server."';";
                 #echo($sql);

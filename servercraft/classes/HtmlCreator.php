@@ -22,7 +22,7 @@ class HtmlCreator
 
     public function createSelector($opt, $selected, $id, $cmpValue, $style = ""){
     	$html="<select name='".$id."' id='".$id."' style=".$style.">\n";
-        echo($selected);
+        #echo($selected);
     	foreach ($opt as $i => $value){
     		if(strcmp($value , $selected)==0 && $cmpValue){
 		      	$html=$html."<option selected value='".$i."'>".$value."</option>\n";
@@ -41,6 +41,21 @@ class HtmlCreator
 
     public function createInput($id, $value, $type = "text"){
     	return "<input name='".$id."' id='".$id."' type='".$type."' value='".$value."'>";
+    }
+
+    public function createInputTable($values, $id, $class, $style, $rowStyle=""){
+        $table="<table class=$class id=$id style=$style>\n\t<tbody>";
+        
+        foreach ($values as $key => $value) {
+            $line = "<tr><td class='firstRow'>$key</td><td class='secondRow'>";
+            $line = $line.$this->createInput($key, $value);
+            $line = $line."</td></tr>\n";
+            $table=$table.$line;
+        }                
+
+        $table=$table."\t</tbody>\n</table>";
+
+        return $table;
     }
 }
 

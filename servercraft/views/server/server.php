@@ -7,11 +7,20 @@ require_once("classes/HtmlCreator.php");
 
 $server_handle = new Server();
 $properties_handle = new Properties();
-foreach ($server_handle->errors as $key => $value) {
-  echo '<script language="javascript">';
-  echo ('alert("'.$value.'")');
-  echo '</script>';
+
+foreach ($properties_handle->messages as $key => $value) {
+  echo("<script type='text/javascript'>alert('$value');</script>");
 }
+foreach ($properties_handle->errors as $key => $value) {
+  echo("<script type='text/javascript'>alert('Error: $value');</script>");
+}
+foreach ($server_handle->messages as $key => $value) {
+  echo("<script type='text/javascript'>alert('$value');</script>");
+}
+foreach ($server_handle->errors as $key => $value) {
+  echo("<script type='text/javascript'>alert('Error: $value');</script>");
+}
+
 $html_creator = new HtmlCreator();
 $status = $server_handle->getStatus($server_name);
 
@@ -81,7 +90,7 @@ function changeFormAction(){
           </td>
         </tr>
         <tr>
-          <td>Nombre</td>
+          <td>Name</td>
           <td>
             <input name="name" id="name" type="text" value=<?php echo($server_name);?>>
           </td>

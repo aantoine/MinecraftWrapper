@@ -5,6 +5,7 @@ class Properties
     private $mc_path = null;
     private $db_connection = null;
     public $errors =  array();
+    public $messages =  array();
 
 	public function __construct()
     {
@@ -58,23 +59,25 @@ class Properties
 		    // El puntero al archivo está al final del archivo
 		    // donde irá $contenido cuando usemos fwrite() sobre él.
 		    if (!$gestor = fopen($file, 'w')) {
-		         //echo "No se puede abrir el archivo ($nombre_archivo)";
+		         $this->errors[]="The file $file cannot be open";
 		         exit;
 		    }
 
 		    // Escribir $contenido a nuestro archivo abierto.
 		    if (fwrite($gestor, $contenido) === FALSE) {
-		        //echo "No se puede escribir en el archivo ($file)";
+		        $this->errors[]="The file $file is not writable";
 		        exit;
 		    }
 
 		    //echo "Éxito, se escribió ($contenido) en el archivo ($file)";
 
 		    fclose($gestor);
+		    $this->messages[]="Changes saved succesfully";
 
 		} else {
-		    echo "El archivo $file no es escribible";
+			$this->errors[]="The file $file is not writable";
 		}
+
     }
 
     public function getProperties(){
@@ -102,7 +105,6 @@ class Properties
 		fclose($myfile);
 		return $array;
 	}
-
 
 }
 

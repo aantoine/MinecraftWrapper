@@ -99,7 +99,7 @@ class Properties
 			$line = fgets($myfile);
 			if(mb_substr($line, 0, 1, 'utf-8')!="#" && $line!=""){
 				$split = explode("=", $line);
-				$array[$split[0]]=substr($split[1], 0, strlen($split[1])-1);
+				$array[$split[0]]=substr($split[1], 0, -1);
 			}
 		}
 		fclose($myfile);

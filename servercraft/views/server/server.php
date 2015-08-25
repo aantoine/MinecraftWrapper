@@ -199,7 +199,7 @@ function changeFormAction(){
           <td>Motd</td>
           <td>
             <input name="motd" id="motd" type="text"
-              value=<?php echo($properties['motd'])?>>
+              value=<?php echo("'".$properties['motd']."'");?>>
           </td>
         </tr>
       </tbody>

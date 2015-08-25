@@ -156,7 +156,7 @@ class Server
             #echo("<br>");
             chdir($scripts);    
             
-            echo('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
+            #echo('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
             $output = shell_exec('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
             chdir($old_path);
             return $output;
@@ -260,16 +260,15 @@ class Server
         $res = $dir_query->fetch_assoc();
         $dir = $res['id'];
 
-        $old_path = getcwd();
+        //Creates directory
         $server = ($this->mc_path)."/servers/".$dir;
-        #echo("<script type='text/javascript'>alert('$server');</script>");
         mkdir("$server");
+        copy(($this->mc_path)."/servers/eula.txt", $server."/eula.txt");
 
-        #echo("<script type='text/javascript'>alert('$name');</script>");
-        $o1=$this->turnOn($name);
-        echo("<script type='text/javascript'>alert('$o1');</script>");
-        $o2=$this->turnOff($name);
-        echo("<script type='text/javascript'>alert('$o2');</script>");
+        $o1=substr($this->turnOn($name), 0, -1);
+        #echo("<script type='text/javascript'>alert('$o1');</script>");
+        $o2=substr($this->turnOff($name), 0, -1);
+        #echo("<script type='text/javascript'>alert('$o2');</script>");
 
 
         //Show succes or failure message

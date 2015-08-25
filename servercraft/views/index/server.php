@@ -3,6 +3,23 @@
 require_once("classes/Server.php");
 
 $server_handle = new Server();
+
+#Show Messages and Errors
+foreach ($properties_handle->messages as $key => $value) {
+  echo("<script type='text/javascript'>alert('$value');</script>");
+}
+foreach ($properties_handle->errors as $key => $value) {
+  echo("<script type='text/javascript'>alert('Error: $value');</script>");
+}
+foreach ($server_handle->messages as $key => $value) {
+  echo("<script type='text/javascript'>alert('$value');</script>");
+}
+foreach ($server_handle->errors as $key => $value) {
+  echo("<script type='text/javascript'>alert('Error: $value');</script>");
+}
+
+
+
 $servers = $server_handle->getServers();
 
 $table = "";

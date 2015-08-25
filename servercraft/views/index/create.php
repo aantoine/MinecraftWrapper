@@ -15,7 +15,7 @@ $jar_selector = $html_creator->createSelector($jars, '', 'jar_prop', True, 'widt
 
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
   <h1 class="page-header">Create new Server</h1>
-  <form id="general-form" method="post" action=<?php echo("index.php?create");?>>
+  <form id="general-form" method="post" action=<?php echo("index.php");?>>
     <input type="hidden" name="createServer" value="createServer">
 
     <h4><u>General</u></h4>
@@ -42,7 +42,7 @@ $jar_selector = $html_creator->createSelector($jars, '', 'jar_prop', True, 'widt
         <tr>
           <td>Xmx</td>
           <td>
-            <input name="xms_prop" id="xmx_prop" type="text" value="">
+            <input name="xmx_prop" id="xmx_prop" type="text" value="">
           </td>
         </tr>
         <tr>

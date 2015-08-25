@@ -30,7 +30,7 @@ class Properties
 
     public function update(){
    		$server = $this->db_connection->real_escape_string(strip_tags($_GET["server"], ENT_QUOTES));
-   		$sql = "SELECT server_directory AS dir FROM servers WHERE server_name='".$server."';";
+   		$sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
         $query_path = $this->db_connection->query($sql);
         $res = $query_path->fetch_assoc();
         $dir = $this->mc_path.'/servers/'.$res['dir'];
@@ -82,7 +82,7 @@ class Properties
 
     public function getProperties(){
     	$server = $this->db_connection->real_escape_string(strip_tags($_GET["server"], ENT_QUOTES));
-   		$sql = "SELECT server_directory AS dir FROM servers WHERE server_name='".$server."';";
+   		$sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
         $query_path = $this->db_connection->query($sql);
         $res = $query_path->fetch_assoc();
         $dir = $this->mc_path.'/servers/'.$res['dir'];

@@ -31,6 +31,9 @@ class Server
         if (isset($_POST["javaUpdate"])) {
             $this->javaUpdate();
         }
+        if (isset($_POST["createServer"])) {
+            $this->createServer();
+        }
 
     }
 
@@ -40,7 +43,7 @@ class Server
 
         // if no connection errors (= working database connection)
         if (!$this->db_connection->connect_errno){
-        	$sql = "SELECT server_name AS name, server_directory AS dir FROM servers;";
+        	$sql = "SELECT server_name AS name, server_id AS dir FROM servers ORDER BY dir;";
             $query_server = $this->db_connection->query($sql);
             
             //for every server in the database 
@@ -61,9 +64,11 @@ class Server
         return $res;
     }
 
-    public function getProperties(){
+    public function getProperties($server=null){
         if (!$this->db_connection->connect_errno){
-            $server = $this->db_connection->real_escape_string(strip_tags($_GET["server"], ENT_QUOTES));
+            if($server==null){
+                $server = $this->db_connection->real_escape_string(strip_tags($_GET["server"], ENT_QUOTES));
+            }
             $name = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
             $sql = "SELECT jars.jar_name AS jar, jars.file AS file, servers.server_xms AS xms, servers.server_xmx AS xmx,".
                     "servers.server_world AS world ".
@@ -103,7 +108,7 @@ class Server
 
     public function getStatus($server){
         if (!$this->db_connection->connect_errno){
-            $sql = "SELECT server_directory AS dir FROM servers WHERE server_name='".$server."';";
+            $sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
             $query_path = $this->db_connection->query($sql);
             $res = $query_path->fetch_assoc();
             $dir = $res['dir'];
@@ -130,13 +135,14 @@ class Server
         return $status;  
     }
 
-    public function turnOn($server){
-
+    public function turnOn($server, $dir=False){
         if (!$this->db_connection->connect_errno){
-            $sql = "SELECT server_directory AS dir FROM servers WHERE server_name='".$server."';";
-            $query_path = $this->db_connection->query($sql);
-            $res = $query_path->fetch_assoc();
-            $dir = $res['dir'];
+            if(!$dir){
+                $sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
+                $query_path = $this->db_connection->query($sql);
+                $res = $query_path->fetch_assoc();
+                $dir = $res['dir'];
+            } else $dir = $server;
 
             $properties = $this->getProperties($server);
             $jar = $properties['file'];
@@ -150,7 +156,7 @@ class Server
             #echo("<br>");
             chdir($scripts);    
             
-            #echo('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
+            echo('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
             $output = shell_exec('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
             chdir($old_path);
             return $output;
@@ -161,12 +167,14 @@ class Server
         }
     }
 
-    public function turnOff($server){    
+    public function turnOff($server, $dir=False){    
         if (!$this->db_connection->connect_errno){
-            $sql = "SELECT server_directory AS dir FROM servers WHERE server_name='".$server."';";
-            $query_path = $this->db_connection->query($sql);
-            $res = $query_path->fetch_assoc();
-            $dir = $res['dir'];
+            if(!$dir){
+                $sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
+                $query_path = $this->db_connection->query($sql);
+                $res = $query_path->fetch_assoc();
+                $dir = $res['dir'];
+            } else $dir = $server;
 
             $old_path = getcwd();
 
@@ -221,12 +229,50 @@ class Server
                 $sql = "UPDATE servers SET server_name='".$name."' WHERE server_name='".$server."';";
                 #echo($sql);
                 $query_jars = $this->db_connection->query($sql);
-
             }
         }
         else{
             $this->errors[] = "Sorry, no database connection.";
         }
+    }
+
+    private function createServer(){
+        #echo("<script type='text/javascript'>alert('create!');</script>");
+        //Verify data!!
+
+        //Add row to the server table
+        $name = $this->db_connection->real_escape_string(strip_tags($_POST["name"], ENT_QUOTES));
+        $jar = $this->db_connection->real_escape_string(strip_tags($_POST["jar_prop"], ENT_QUOTES));
+        $xms = $this->db_connection->real_escape_string(strip_tags($_POST["xms_prop"], ENT_QUOTES));
+        $xmx = $this->db_connection->real_escape_string(strip_tags($_POST["xmx_prop"], ENT_QUOTES));
+
+        $jar_sql = "SELECT jar_id AS id FROM jars WHERE file='".$jar."';";
+        $jar_query = $this->db_connection->query($jar_sql);
+        $res = $jar_query->fetch_assoc();
+        $jar_id = $res['id'];       
+
+        $server_sql = "INSERT INTO servers (server_name, server_jar, server_xmx, server_xms, server_world) VALUES('$name', $jar_id, $xmx, $xms, 'world');";
+        $query_server = $this->db_connection->query($server_sql);
+
+        //Turn On and Off the server to create folders
+        $dir_sql = "SELECT server_id AS id FROM servers ORDER BY id DESC LIMIT 1;";
+        $dir_query = $this->db_connection->query($dir_sql);
+        $res = $dir_query->fetch_assoc();
+        $dir = $res['id'];
+
+        $old_path = getcwd();
+        $server = ($this->mc_path)."/servers/".$dir;
+        #echo("<script type='text/javascript'>alert('$server');</script>");
+        mkdir("$server");
+
+        #echo("<script type='text/javascript'>alert('$name');</script>");
+        $o1=$this->turnOn($name);
+        echo("<script type='text/javascript'>alert('$o1');</script>");
+        $o2=$this->turnOff($name);
+        echo("<script type='text/javascript'>alert('$o2');</script>");
+
+
+        //Show succes or failure message
     }
 
 }

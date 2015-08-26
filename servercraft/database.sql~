@@ -31,19 +31,6 @@ CREATE TABLE IF NOT EXISTS `jars` (
 INSERT INTO `config` (opt_name, opt_value)
 VALUES('mc_path', ruta al path!!!!);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 INSERT INTO `jars` (jar_name, file)
 VALUES('Minecraft 1.8.4', 'minecraft_server.1.8.4.jar');
 

@@ -70,7 +70,9 @@ function changeFormAction(){
 <script src="scripts/commands.js"></script>
 
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-  <h1 class="page-header"><?php echo($server_name);?></h1>
+  <h1 class="page-header">
+    <?php echo($server_name);?>
+  </h1>
   <div class="table-responsive">
   <form id="general-form" method="post" action=<?php echo("server.php?server=".$server_name);?>>
     <input type="hidden" name="nameUpdate" value="nameUpdate">

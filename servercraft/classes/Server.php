@@ -7,6 +7,7 @@ class Server
     private $mc_path = null;
 
 	public $errors = array();
+    public $messages = array();
 
 
 	public function __construct()
@@ -33,6 +34,9 @@ class Server
         }
         if (isset($_POST["createServer"])) {
             $this->createServer();
+        }
+        if (isset($_POST["deleteServer"]) && isset($_POST["server"])) {
+            $this->deleteServer($_POST["server"]);
         }
 
     }
@@ -118,6 +122,7 @@ class Server
         }
         else{
             $this->errors[] = "Sorry, no database connection.";
+            return 0;
         }
 
     }
@@ -237,8 +242,8 @@ class Server
     }
 
     private function createServer(){
-        #echo("<script type='text/javascript'>alert('create!');</script>");
-        //Verify data!!
+        //Verify data!! TODO
+
 
         //Add row to the server table
         $name = $this->db_connection->real_escape_string(strip_tags($_POST["name"], ENT_QUOTES));
@@ -266,12 +271,26 @@ class Server
         copy(($this->mc_path)."/servers/eula.txt", $server."/eula.txt");
 
         $o1=substr($this->turnOn($name), 0, -1);
-        #echo("<script type='text/javascript'>alert('$o1');</script>");
-        $o2=substr($this->turnOff($name), 0, -1);
-        #echo("<script type='text/javascript'>alert('$o2');</script>");
-
 
         //Show succes or failure message
+        if(strcmp($o1, "success")==0){
+            $o2=substr($this->turnOff($name), 0, -1);
+            if(strcmp($o2, "success")==0){
+                $this->messages[] = "Server created successfully";
+            }
+            else{
+                $this->errors[] = "Couldnt stop new Server!";
+            }
+        }
+        else{
+            $this->errors[] = "Couldnt create Server!";
+        }
+    }
+
+    private function deleteServer($server){
+        $this->messages[] = "$server deleted! (?)";
+        $name = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
+
     }
 
 }

@@ -32,23 +32,35 @@ foreach ($servers as $i => $value) {
       $img = "res/offline.png";
     }
 
-    $table = $table.(sprintf("<tr style='cursor:pointer' onclick='show_details(\"%s\")'>
+
+    $table = $table.(sprintf("<tr>
           <td><img src=\"%s\" class=\"img-responsive\" alt=\"Status\"></td>
+          <td style='cursor:pointer' onclick='show_details(\"%s\")'>%s</td>
           <td>%s</td>
-          <td>%s</td>
+          <td><a href='javascript:deleteDialog(\"%s\")'><img src='res/delete.png' class='img-responsive' alt='Delete'></a></td>
           </tr>\n",
-          $server,
           $img,
           $server,
-          $status));
+          $server,
+          $status,
+          $server));
 }
 
 ?>
 
+<script src="scripts/delete.js"></script>
 <script type="text/javascript">
 function show_details(server){
   document.getElementById('server').value = server;
   document.DetailForm.submit();
+}
+function deleteHandle(res){
+  alert(res);
+}
+function deleteDialog(server){
+  if (confirm('Are you sure you want to delete this server?')) {
+    deleteServer(server, deleteHandle);
+  }
 }
 </script>
 
@@ -56,7 +68,7 @@ function show_details(server){
   <h1 class="page-header">Servers</h1>
   <div class="table-responsive">
     <table class="table table-striped" id ="servers-table">
-      <thead><th></th><th>Name</th><th>Status</th></thead>
+      <thead><th></th><th>Name</th><th>Status</th><th></th></thead>
       <tbody>
       <?php
       	echo($table);

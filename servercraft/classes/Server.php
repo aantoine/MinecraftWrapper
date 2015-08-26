@@ -35,8 +35,8 @@ class Server
         if (isset($_POST["createServer"])) {
             $this->createServer();
         }
-        if (isset($_POST["deleteServer"]) && isset($_POST["server"])) {
-            $this->deleteServer($_POST["server"]);
+        if (isset($_POST["deleteServer"]) && isset($_POST["delServer"])) {
+            $this->deleteServer($_POST["delServer"]);
         }
 
     }
@@ -288,9 +288,46 @@ class Server
     }
 
     private function deleteServer($server){
-        $this->messages[] = "$server deleted! (?)";
         $name = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
+        $status = $this->getStatus($name);
+        if(strcmp($status, "online")==0){
+            $this->errors[] = "Server is already online, please turn it off first";
+            return;
+        }
 
+        //Delete the directory
+        $dir_sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$name."';";
+        $dir_query = $this->db_connection->query($dir_sql);
+        $res = $dir_query->fetch_assoc();
+        $dir = $res['dir'];
+        if($dir==null){
+            $this->errors[] = "null dir";
+            return;
+        }
+
+        $directory = ($this->mc_path)."/servers/".$dir;
+        #$this->rrmdir($directory);
+
+        //Delete row in Database
+        $del_sql = "DELETE FROM servers WHERE server_name='".$name."';";
+        $del_query = $this->db_connection->query($del_sql);
+        
+        #$this->messages[] = "Server eliminated successfully";
+        #$this->messages[] = "dir: !$dir!";
+    }
+
+    private function rrmdir($dir){ 
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (filetype($dir."/".$object) == "dir") $this->rrmdir($dir."/".$object);
+                    else unlink($dir."/".$object);
+                }
+            }
+            reset($objects); 
+            rmdir($dir); 
+        } 
     }
 
 }

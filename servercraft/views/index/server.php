@@ -5,12 +5,7 @@ require_once("classes/Server.php");
 $server_handle = new Server();
 
 #Show Messages and Errors
-foreach ($properties_handle->messages as $key => $value) {
-  echo("<script type='text/javascript'>alert('$value');</script>");
-}
-foreach ($properties_handle->errors as $key => $value) {
-  echo("<script type='text/javascript'>alert('Error: $value');</script>");
-}
+
 foreach ($server_handle->messages as $key => $value) {
   echo("<script type='text/javascript'>alert('$value');</script>");
 }
@@ -46,20 +41,19 @@ foreach ($servers as $i => $value) {
           $server));
 }
 
-?>
+#echo("<script type='text/javascript'>alert('All good');</script>");
 
-<script src="scripts/delete.js"></script>
+?>
 <script type="text/javascript">
 function show_details(server){
   document.getElementById('server').value = server;
   document.DetailForm.submit();
 }
-function deleteHandle(res){
-  alert(res);
-}
+
 function deleteDialog(server){
   if (confirm('Are you sure you want to delete this server?')) {
-    deleteServer(server, deleteHandle);
+    document.getElementById('delServer').value = server;
+    document.DeleteForm.submit();
   }
 }
 </script>
@@ -83,6 +77,10 @@ function deleteDialog(server){
   <div id ="form">
     <form action='server.php' method='GET' name='DetailForm'>
         <input id="server" type='hidden' name='server' value=''>
+    </form>
+    <form action='index.php' method='POST' name='DeleteForm'>
+        <input id="delServer" type='hidden' name='delServer' value=''>
+        <input id="deleteServer" type='hidden' name='deleteServer' value='true'>
     </form>
   </div>
 </div>

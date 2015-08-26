@@ -7,5 +7,8 @@ if(isset($_POST['deleteServer'])){
 	foreach ($server_handle->messages as $key => $value) {
 		echo($value);
 	}
+	foreach ($server_handle->errors as $key => $value) {
+		echo($value);
+	}
 }
 ?>

@@ -10,7 +10,7 @@ if(isset($_GET['server'])){
 		echo($server_handle->turnOff($_GET['server'], 0));
 	}
 	elseif(isset($_GET['command'])){
-		#echo(3);
+		echo($server_handle->sendCommand($_GET['server'], $_GET['command']));
 	}
 }
 ?>

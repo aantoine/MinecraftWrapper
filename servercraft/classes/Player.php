@@ -1,6 +1,6 @@
 <?php
 
-class Server
+class Player
 {
 
 	private $db_connection = null;
@@ -112,7 +112,6 @@ class Server
 
     public function getStatus($server){
         if (!$this->db_connection->connect_errno){
-            $server = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
             $sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
             $query_path = $this->db_connection->query($sql);
             $res = $query_path->fetch_assoc();
@@ -144,7 +143,6 @@ class Server
     public function turnOn($server, $dir=False){
         if (!$this->db_connection->connect_errno){
             if(!$dir){
-                $server = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
                 $sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
                 $query_path = $this->db_connection->query($sql);
                 $res = $query_path->fetch_assoc();
@@ -174,7 +172,6 @@ class Server
     public function turnOff($server, $fast, $dir=False){    
         if (!$this->db_connection->connect_errno){
             if(!$dir){
-                $server = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
                 $sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
                 $query_path = $this->db_connection->query($sql);
                 $res = $query_path->fetch_assoc();
@@ -317,27 +314,6 @@ class Server
         
         #$this->messages[] = "Server eliminated successfully";
         #$this->messages[] = "dir: !$dir!";
-    }
-
-    public function sendCommand($server, $command){
-        $server = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
-        $sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
-        $query_path = $this->db_connection->query($sql);
-        $res = $query_path->fetch_assoc();
-        $dir = $res['dir'];
-
-        $status = $this->_getStatus($dir);
-        if(strcmp($status, "online")!=0){
-            $this->errors[] = "Cannot send command to an inactive server";
-            echo("Cannot send command to an inactive server");
-            return;
-        }
-
-        $scripts = ($this->mc_path)."/scripts";
-        chdir($scripts);
-
-        $output = shell_exec('./main.sh command '.$dir.' '.$command);
-        chdir($old_path);
     }
 
     private function rrmdir($dir){ 

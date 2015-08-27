@@ -49,7 +49,7 @@ mc_start() {
     local JAR=$3
 
     local INVOCATION="java -Xmx${MAXHEAP}M -Xms${MINHEAP}M -jar $SERVICEPATH$JAR $OPTIONS"
-    #echo $INVOCATION
+    #echo "cd $PLACE && screen -dmS ${SERVICE} $INVOCATION"
     as_user "cd $PLACE && screen -dmS ${SERVICE} $INVOCATION"
     sleep 7
     if pgrep -f $SERVICENAME$2 > /dev/null
@@ -90,15 +90,12 @@ mc_stop() {
 } 
 
 mc_command() {
-  command="$1";
+  local SERVICE=$SERVICENAME$1
   if pgrep -f $SERVICE > /dev/null
   then
-    pre_log_len=`wc -l "$MCPATH/logs/latest.log" | awk '{print $1}'`
+    command="$2";
     echo "$SERVICE is running... executing command"
-    as_user "screen -S ${SCREENNAME} -X eval 'stuff \"$command\"\015'"
-    sleep .1 # assumes that the command will run and print to the log file in less than .1 seconds
-    # print output
-    # tail -n $[`wc -l "$MCPATH/logs/latest.log" | awk '{print $1}'`-$pre_log_len] "$MCPATH/logs/latest.log"
+    as_user "screen -S ${SERVICE} -X eval 'stuff \"$command\"\015'"
   fi
 }
 
@@ -119,9 +116,6 @@ case "$1" in
     mc_stop $3
     mc_start $2 $3 $4 $5 $6
     ;;
-  log)
-    mc_log
-    ;;
   status)
     #echo $SERVICENAME$3
     if pgrep -f $SERVICENAME$2 > /dev/null
@@ -134,7 +128,9 @@ case "$1" in
   command)
     if [ $# -gt 1 ]; then
       shift
-      mc_command "$*"
+      SERVER="$1"
+      shift
+      mc_command $SERVER "$*"
     else
       echo "Must specify server command (try 'help'?)"
     fi

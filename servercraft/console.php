@@ -79,12 +79,13 @@ else{
             if(data == "success"){
               load();
             }
+            alert(data);
           }
         }
 
         var id = <?php echo("\"".$server_name."\"")?>;
 
-        xmlhttp.open("GET","php/scripts/send_command.php?server="+id+"&command="+command, true);
+        xmlhttp.open("GET","php/scripts/command.php?server="+id+"&command="+command, true);
         xmlhttp.send();
 
       }

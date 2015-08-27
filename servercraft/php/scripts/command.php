@@ -7,7 +7,7 @@ if(isset($_GET['server'])){
 		echo($server_handle->turnOn($_GET['server']));
 	}
 	elseif(isset($_GET['stop'])){
-		echo($server_handle->turnOff($_GET['server']));
+		echo($server_handle->turnOff($_GET['server'], 0));
 	}
 	elseif(isset($_GET['command'])){
 		#echo(3);

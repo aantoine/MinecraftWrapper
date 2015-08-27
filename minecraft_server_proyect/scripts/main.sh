@@ -66,9 +66,13 @@ mc_stop() {
 
   if pgrep -f $SERVICE > /dev/null
   then
-    as_user "screen -S ${SERVICE} -X eval 'stuff \"say SERVER SHUTTING DOWN IN 10 SECONDS. Saving map...\"\015'"
     as_user "screen -S ${SERVICE} -X eval 'stuff \"save-all\"\015'"
-    sleep 10
+    if [ "$2" == "1" ] ; then
+      as_user "screen -S ${SERVICE} -X eval 'stuff \"say FAST SHUTTDOWN. Saving map...\"\015'"
+    else
+      as_user "screen -S ${SERVICE} -X eval 'stuff \"say SERVER SHUTTING DOWN IN 10 SECONDS. Saving map...\"\015'"
+      sleep 10
+    fi
     #as_user "screen -S ${SCREENNAME} -X quit"
     as_user "screen -S ${SERVICE} -X eval 'stuff \"stop\"\015'"
     sleep 5
@@ -109,7 +113,7 @@ case "$1" in
     mc_start $2 $3 $4 $5 $6
     ;;
   stop)
-    mc_stop $2
+    mc_stop $2 $3
     ;;
   restart)
     mc_stop $3

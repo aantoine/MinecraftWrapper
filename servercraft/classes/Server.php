@@ -157,12 +157,9 @@ class Server
             $old_path = getcwd();
 
             $scripts = ($this->mc_path)."/scripts";
-            #echo($scripts);
-            #echo("<br>");
             chdir($scripts);    
             
-            #echo('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
-            $output = shell_exec('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
+            $output = shell_exec('./main.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
             chdir($old_path);
             return $output;
 
@@ -172,7 +169,7 @@ class Server
         }
     }
 
-    public function turnOff($server, $dir=False){    
+    public function turnOff($server, $fast, $dir=False){    
         if (!$this->db_connection->connect_errno){
             if(!$dir){
                 $sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
@@ -184,12 +181,14 @@ class Server
             $old_path = getcwd();
 
             $scripts = ($this->mc_path)."/scripts";
-            #echo($scripts);
-            #echo("<br>");
-            chdir($scripts);    
+            chdir($scripts);
+
+            if($fast!=1 && $fast!=0){
+                $this->errors[] = "Bad argument in turnOff function";
+                return 'error';
+            }
             
-            #echo('./server1.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
-            $output = shell_exec('./server1.sh stop '.$dir);
+            $output = shell_exec('./main.sh stop '.$dir.' '.$fast);
             chdir($old_path);
             return $output;
 
@@ -271,10 +270,11 @@ class Server
         copy(($this->mc_path)."/servers/eula.txt", $server."/eula.txt");
 
         $o1=substr($this->turnOn($name), 0, -1);
-
+        //Creating a server takes time...
+        sleep(10);
         //Show succes or failure message
         if(strcmp($o1, "success")==0){
-            $o2=substr($this->turnOff($name), 0, -1);
+            $o2=substr($this->turnOff($name, 1), 0, -1);
             if(strcmp($o2, "success")==0){
                 $this->messages[] = "Server created successfully";
             }
@@ -300,13 +300,13 @@ class Server
         $dir_query = $this->db_connection->query($dir_sql);
         $res = $dir_query->fetch_assoc();
         $dir = $res['dir'];
-        if($dir==null){
-            $this->errors[] = "null dir";
+        if($dir==null or strcmp($dir, "")==0){
+            $this->errors[] = "Null directory";
             return;
         }
 
         $directory = ($this->mc_path)."/servers/".$dir;
-        #$this->rrmdir($directory);
+        $this->rrmdir($directory);
 
         //Delete row in Database
         $del_sql = "DELETE FROM servers WHERE server_name='".$name."';";

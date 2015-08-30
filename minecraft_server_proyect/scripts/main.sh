@@ -94,8 +94,10 @@ mc_command() {
   if pgrep -f $SERVICE > /dev/null
   then
     command="$2";
-    echo "$SERVICE is running... executing command"
     as_user "screen -S ${SERVICE} -X eval 'stuff \"$command\"\015'"
+    echo "success"
+  else
+    echo "error"
   fi
 }
 

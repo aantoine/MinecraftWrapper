@@ -32,8 +32,8 @@ class Log
     }
 
     public function getLastLogLine($server){
-		$log = $this->getLogAsArray($server);
-		return end($log);
+  		$log = $this->getLogAsArray($server);
+  		return end($log);
     }
 
     private function getLogAsArray($server){

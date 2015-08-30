@@ -328,9 +328,7 @@ class Server
 
         $status = $this->_getStatus($dir);
         if(strcmp($status, "online")!=0){
-            $this->errors[] = "Cannot send command to an inactive server";
-            echo("Cannot send command to an inactive server");
-            return;
+            return "Cannot send command to an inactive server";
         }
 
         $scripts = ($this->mc_path)."/scripts";
@@ -338,6 +336,7 @@ class Server
 
         $output = shell_exec('./main.sh command '.$dir.' '.$command);
         chdir($old_path);
+        return substr($output, 0, -1);;
     }
 
     private function rrmdir($dir){ 

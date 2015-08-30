@@ -6,6 +6,7 @@ class Player
 	private $db_connection = null;
     private $mc_path = null;
     private $directory = null;
+    private $server = null;
 
 	public $errors = array();
     public $messages = array();
@@ -32,10 +33,19 @@ class Player
         $res = $query_path->fetch_assoc();
         $this->directory = $this->mc_path.'/servers/'.$res['dir'];
 
+        $this->server = $server;
+
     }
 
-    public function getOnlinePlayers(){
-        echo("hola");
+    public function getOnlinePlayers($server_handle, $log_handle){        
+        $output = $server_handle->sendCommand($this->server, "list");
+        if(strcmp($output, "success")!=0){
+            $this->messages = "Server is offline, no online players";
+            return array("Server is offline, no online players");
+        }
+        sleep(1);
+        $list = $log_handle->getLastLogLine($this->server);
+        return $this->trimPlayers($list);
     }
 
     private function getJsonFile($file){
@@ -93,6 +103,12 @@ class Player
             $res[] = "There is non banned ips on this server";
         }
         return $res;
+    }
+
+    private function trimPlayers($line){
+        $pattern = "]: ";
+        $split = split($pattern, $line);
+        return split(",", $split[1]);
     }
 
 }

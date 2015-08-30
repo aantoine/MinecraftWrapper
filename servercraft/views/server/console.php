@@ -3,9 +3,14 @@
 $server_name = $server;
 
 require_once("classes/Log.php");
-
+require_once("classes/Player.php");
+require_once("classes/Server.php");
+$server_handle = new Server();
 $log_handle = new Log();
+$player_handle = new Player($server_name);
+
 $log = $log_handle->getLog($server_name);
+$onlinePlayers = $player_handle->getOnlinePlayers($server_handle, $log_handle);
 
 
 ?>
@@ -80,13 +85,14 @@ function changeTab(selected){
 	  </script>
   </div>
 
-  <div style="float:left; padding-left: 1cm;">
+  <div style="float:left; padding-left: 15px;">
 	<h4>Online Players</h4>
 	<ul>
-		<li>AgustinPls</li>
-		<li>Cami01</li>
-		<li>mtomic</li>
-		<li>NachotheHunter</li>
+		<?php
+  		foreach ($onlinePlayers as $key => $value) {
+  			echo("<li>$value</li>");
+  		}
+  		?>
 	</ul>
   </div>	
 </div>

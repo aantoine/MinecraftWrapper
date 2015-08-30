@@ -65,17 +65,28 @@ function changeTab(selected){
 
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
   <h1 class="page-header"><?php echo($server_name);?></h1>
-  <ul id="operators" class="consoleOperator">
-    <li id="say-tab" class="active"><a href="javascript:changeTab('say-tab')">Say</a></li>
-    <li id="command-tab"><a href="javascript:changeTab('command-tab')">Command</a></li>
-  </ul>
-  <input type="text" id="command" name="command" style="width:500px" onkeydown="pressed(event)">
-  
-  <br></br>
-  <textarea class="logArea" readonly="readonly" name="log" id="log" rows="23" style="width: 700px;">
-  	<?php echo($log);?></textarea>
-  <script type="text/javascript">
-  	var textarea = document.getElementById('log');
-  	textarea.scrollTop = textarea.scrollHeight;
-  </script>
+  <div style="float:left;">
+	  <ul id="operators" class="consoleOperator">
+	    <li id="say-tab" class="active"><a href="javascript:changeTab('say-tab')">Say</a></li>
+	    <li id="command-tab"><a href="javascript:changeTab('command-tab')">Command</a></li>
+	  </ul>
+	  <input type="text" id="command" name="command" style="width:500px" onkeydown="pressed(event)">
+	  
+	  <br></br>
+	  <textarea class="logArea" readonly="readonly" name="log" id="log" rows="22" style="width: 700px;"><?php echo($log);?></textarea>
+	  <script type="text/javascript">
+	  	var textarea = document.getElementById('log');
+	  	textarea.scrollTop = textarea.scrollHeight;
+	  </script>
+  </div>
+
+  <div style="float:left; padding-left: 1cm;">
+	<h4>Online Players</h4>
+	<ul>
+		<li>AgustinPls</li>
+		<li>Cami01</li>
+		<li>mtomic</li>
+		<li>NachotheHunter</li>
+	</ul>
+  </div>	
 </div>

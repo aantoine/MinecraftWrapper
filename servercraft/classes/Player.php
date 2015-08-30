@@ -50,6 +50,48 @@ class Player
         foreach ($json as $op => $op_a){
             $res[] = $op_a['name'];
         }
+        if(count($res)==0){
+            $res[] = "There is non OP players on this server";
+        }
+        return $res;
+    }
+
+    public function getWhitelist(){
+        $file = $this->directory.'/whitelist.json';
+        $json = $this->getJsonFile($file);
+        $res = [];
+        foreach ($json as $op => $op_a){
+            $res[] = $op_a['name'];
+        }
+        if(count($res)==0){
+            $res[] = "There is non Whitelisted players on this server";
+        }
+        return $res;
+    }
+
+    public function getBannedPlayers(){
+        $file = $this->directory.'/banned-players.json';
+        $json = $this->getJsonFile($file);
+        $res = [];
+        foreach ($json as $op => $op_a){
+            $res[] = $op_a['name'];
+        }
+        if(count($res)==0){
+            $res[] = "There is non banned players on this server";
+        }
+        return $res;
+    }
+
+    public function getBannedIps(){
+        $file = $this->directory.'/banned-ips.json';
+        $json = $this->getJsonFile($file);
+        $res = [];
+        foreach ($json as $op => $op_a){
+            $res[] = $op_a['name'];
+        }
+        if(count($res)==0){
+            $res[] = "There is non banned ips on this server";
+        }
         return $res;
     }
 

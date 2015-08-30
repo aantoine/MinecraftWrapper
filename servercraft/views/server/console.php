@@ -72,7 +72,7 @@ function changeTab(selected){
   <input type="text" id="command" name="command" style="width:500px" onkeydown="pressed(event)">
   
   <br></br>
-  <textarea class="logArea" readonly="readonly" name="log" id="log" rows="23">
+  <textarea class="logArea" readonly="readonly" name="log" id="log" rows="23" style="width: 700px;">
   	<?php echo($log);?></textarea>
   <script type="text/javascript">
   	var textarea = document.getElementById('log');

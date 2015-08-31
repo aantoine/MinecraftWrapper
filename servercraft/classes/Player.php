@@ -45,7 +45,11 @@ class Player
         }
         sleep(1);
         $list = $log_handle->getLastLogLine($this->server);
-        return $this->trimPlayers($list);
+        $players = $this->trimPlayers($list);
+        if(count($players)==0){
+            $players[] = "No online players in the server";
+        }
+        return $players;
     }
 
     private function getJsonFile($file){

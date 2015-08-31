@@ -17,5 +17,4 @@
 !/minecraft_server_proyect/scripts
 
 #Ignores config file
-/servercraft/config/*
-!/servercraft/config/db-sample.php
+/servercraft/config/db.php

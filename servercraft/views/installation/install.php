@@ -54,6 +54,12 @@ switch($step) {
 			die();
 		}
 
+		if(!createTables()){
+			#TODO: Request Specific error page
+			require_once("views/installation/error.php");
+			die();
+		}
+
 		require_once("views/installation/phase2.php");
 		break;
 

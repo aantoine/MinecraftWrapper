@@ -72,4 +72,11 @@ function changeLine($line, $pattern, $sustitute){
 	return $line;
 }
 
+function createTables(){
+	$sqlSource = file_get_contents('config/database.sql');
+	require_once("config/db.php");
+	$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+	return mysqli_multi_query ( $mysqli , $sqlSource );
+}
+
 ?>

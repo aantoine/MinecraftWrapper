@@ -1,4 +1,9 @@
 <?php
+require_once("php/install_functions.php");
+if(!dbConfigExists() || !canConnect()){
+	require_once("install.php");
+	die();
+}
 
 // include the configs / constants for the database connection
 require_once("config/db.php");

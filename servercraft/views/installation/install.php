@@ -13,6 +13,7 @@ switch($step) {
 		#if dont, jumps to step 1
 
 		if(dbConfigExists() && canConnect()){
+			resetInstall();
 			require_once("views/installation/error.php");
 			die();
 		}
@@ -21,6 +22,7 @@ switch($step) {
 
 	case 1: // Step 1, Config Setup
 		if(dbConfigExists() && canConnect()){
+			resetInstall();
 			require_once("views/installation/error.php");
 			die();
 		}
@@ -42,6 +44,7 @@ switch($step) {
 
 		if(!dbConfigExists() or !isset($_POST["db-host"]) or !isset($_POST["db-name"])
 		or !isset($_POST["db-user"]) or !isset($_POST["db-pass"]) ){ //previous step creates the file
+			resetInstall();
 			require_once("views/installation/error.php");
 			die();
 		}
@@ -50,12 +53,14 @@ switch($step) {
 
 		if(!canConnect()){
 			#TODO: Request Specific error page
+			resetInstall();
 			require_once("views/installation/error.php");
 			die();
 		}
 
 		if(!createTables()){
 			#TODO: Request Specific error page
+			resetInstall();
 			require_once("views/installation/error.php");
 			die();
 		}
@@ -67,10 +72,19 @@ switch($step) {
 		#Updates the tables, if everything is correct links to the index of the app
 
 		if(!dbConfigExists() || !canConnect()){
+			resetInstall();
 			require_once("views/installation/error.php");
 			die();
 		}
 
+		$path = updatePath();
+		if(!createProyectFolder($path)){
+			#TODO: Request Specific error page
+			resetInstall();
+			require_once("views/installation/errorPath.php");
+			die();
+		}
+		require_once("views/installation/phase3.php");
 
 		break;
 }

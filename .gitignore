@@ -11,10 +11,9 @@
 *.tar
 *.zip
 
-# Ignores /minecraft_server_proyect except for scripts
-
-/minecraft_server_proyect/*
-!/minecraft_server_proyect/scripts
+# Ignores all except for the web directory
+/*
+!/servercraft
 
 #Ignores config file
 /servercraft/config/db.php

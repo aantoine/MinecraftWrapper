@@ -138,6 +138,7 @@ class Server
         $res = explode(" ", $output);
         //obtain status from output
         $status = substr($res[1], 0, strlen($res[1])-1);
+        chdir($old_path);
         return $status;  
     }
 
@@ -270,7 +271,7 @@ class Server
         //Creates directory
         $server = ($this->mc_path)."/servers/".$dir;
         mkdir("$server");
-        copy(($this->mc_path)."/servers/eula.txt", $server."/eula.txt");
+        copy("res/eula.txt", $server."/eula.txt");
 
         $o1=substr($this->turnOn($name), 0, -1);
         //Creating a server takes time...
@@ -330,6 +331,7 @@ class Server
         if(strcmp($status, "online")!=0){
             return "Cannot send command to an inactive server";
         }
+        $old_path = getcwd();
 
         $scripts = ($this->mc_path)."/scripts";
         chdir($scripts);

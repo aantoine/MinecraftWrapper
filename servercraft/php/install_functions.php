@@ -79,4 +79,38 @@ function createTables(){
 	return mysqli_multi_query ( $mysqli , $sqlSource );
 }
 
+function updatePath(){
+	require_once("config/db.php");
+	$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+	$path = $mysqli->real_escape_string(strip_tags($_POST["path"], ENT_QUOTES));
+	$server_sql = "INSERT INTO config (opt_name, opt_value) VALUES('mc_path', '$path');";
+    $query_server = $mysqli->query($server_sql);	
+    return $path;
+}
+
+function createProyectFolder($path){
+	$name = "/minecraft_wrapper";
+	if(!mkdir($path.$name)) {
+	    return 0;
+	}
+	mkdir($path.$name."/jars");
+	mkdir($path.$name."/servers");
+	mkdir($path.$name."/scripts");
+	copy("res/main.sh", $path.$name."/scripts/main.sh");
+	return 1;
+}
+
+function resetInstall(){
+	if (canConnect()){
+		require_once("config/db.php");
+		$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		$drop_sql = "drop table config; drop table servers; drop table users; drop table jars;";
+    	mysqli_multi_query ( $mysqli , $drop_sql );
+	}
+	if (dbConfigExists()){
+		unlink("config/db.php");
+	}
+
+}
+
 ?>

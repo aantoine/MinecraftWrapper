@@ -12,18 +12,17 @@ switch($step) {
 		#if exists, jumps to step 2
 		#if dont, jumps to step 1
 
-		if(dbConfigExists() && canConnect()){
-			resetInstall();
-			require_once("views/installation/error.php");
+		if(dbConfigExists() && canConnect() && isPopulated()){
+			echo addError("Instalation already Exist!", "403");
+			#require_once("views/installation/error.php");
 			die();
 		}
 		require_once("views/installation/phase0.php");
 		break;
 
 	case 1: // Step 1, Config Setup
-		if(dbConfigExists() && canConnect()){
-			resetInstall();
-			require_once("views/installation/error.php");
+		if(dbConfigExists() && canConnect() && isPopulated()){
+			echo addError("Instalation already Exist!", "403");
 			die();
 		}
 		#Creates config file if it doesnt exist (if exists exit??)
@@ -45,23 +44,22 @@ switch($step) {
 		if(!dbConfigExists() or !isset($_POST["db-host"]) or !isset($_POST["db-name"])
 		or !isset($_POST["db-user"]) or !isset($_POST["db-pass"]) ){ //previous step creates the file
 			resetInstall();
-			require_once("views/installation/error.php");
+			echo addError("Bad Request, Reseting Installation", "400");
 			die();
 		}
 
 		setupConfigFile();
 
 		if(!canConnect()){
-			#TODO: Request Specific error page
 			resetInstall();
-			require_once("views/installation/error.php");
+			echo addError("Couldnt setup Config File, Reseting Installation", "500");
 			die();
 		}
 
 		if(!createTables()){
 			#TODO: Request Specific error page
 			resetInstall();
-			require_once("views/installation/error.php");
+			echo addError("Couldnt create Tables in given database, Reseting Installation", "500");
 			die();
 		}
 
@@ -72,8 +70,7 @@ switch($step) {
 		#Updates the tables, if everything is correct links to the index of the app
 
 		if(!dbConfigExists() || !canConnect()){
-			resetInstall();
-			require_once("views/installation/error.php");
+			echo addError("Instalation already Exist!", "403");
 			die();
 		}
 
@@ -81,7 +78,7 @@ switch($step) {
 		if(!createProyectFolder($path)){
 			#TODO: Request Specific error page
 			resetInstall();
-			require_once("views/installation/errorPath.php");
+			echo addError("Apache user must have write permissions on selected path (ie: /var/www/)", "400");
 			die();
 		}
 		require_once("views/installation/phase3.php");

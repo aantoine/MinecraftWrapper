@@ -113,4 +113,25 @@ function resetInstall(){
 
 }
 
+function isPopulated(){
+	require_once("config/db.php");
+	$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+	$config_sql = "select opt_id from config where opt_name='mc_path'";
+	$res = $mysqli->query($config_sql);
+	if($res->num_rows == 0){
+		return 0;
+	}
+	return 1;
+}
+
+function addError($message, $errnum){
+	return "".
+	"<div class='col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main'>
+	  <h1 class='page-header'>
+	    Error $errnum
+	  </h1>
+	  <h3>$message</h3>
+	</div>";
+}
+
 ?>

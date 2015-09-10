@@ -1,6 +1,6 @@
 <?php
 require_once("php/install_functions.php");
-if(!dbConfigExists() || !canConnect()){
+if(isset( $_POST['step'] ) || !dbConfigExists() || !canConnect() || !isPopulated()){
 	require_once("install.php");
 	die();
 }

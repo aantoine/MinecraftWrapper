@@ -3,7 +3,7 @@
     Config Setup
   </h1>
   <div class="table-responsive">
-  <form id="general-form" method="post" action="install.php">
+  <form id="general-form" method="post" action="index.php">
     <input type="hidden" name="step" value="2">
     <table class="table table-striped" id="server-prop" style="width:auto">
       <tbody>

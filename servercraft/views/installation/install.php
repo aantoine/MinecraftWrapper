@@ -1,6 +1,4 @@
 <?php
-require_once("php/install_functions.php");
-
 
 $step = isset( $_POST['step'] ) ? (int) $_POST['step'] : 0;
 

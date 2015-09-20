@@ -147,8 +147,12 @@ class Server
             if(!$dir){
                 $server = $this->db_connection->real_escape_string(strip_tags($server, ENT_QUOTES));
                 $sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$server."';";
-                $query_path = $this->db_connection->query($sql);
-                $res = $query_path->fetch_assoc();
+                $query_on = $this->db_connection->query($sql);
+                $row_cnt = mysqli_num_rows($query_on);
+                if($row_cnt==0){
+                    return "error";
+                }
+                $res = $query_on->fetch_assoc();
                 $dir = $res['dir'];
             } else $dir = $server;
 
@@ -161,7 +165,7 @@ class Server
 
             $scripts = ($this->mc_path)."/scripts";
             chdir($scripts);    
-            
+            #echo('./main.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
             $output = shell_exec('./main.sh start '.$this->mc_path.' '.$dir.' '.$jar.' '.$xms.' '.$xmx);
             chdir($old_path);
             return $output;
@@ -278,6 +282,7 @@ class Server
         sleep(10);
         //Show succes or failure message
         if(strcmp($o1, "success")==0){
+            sleep(3);
             $o2=substr($this->turnOff($name, 1), 0, -1);
             if(strcmp($o2, "success")==0){
                 $this->messages[] = "Server created successfully";
@@ -288,6 +293,7 @@ class Server
         }
         else{
             $this->errors[] = "Couldnt create Server!";
+            echo $o1;
         }
     }
 

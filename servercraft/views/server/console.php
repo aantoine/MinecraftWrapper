@@ -68,8 +68,7 @@ function changeTab(selected){
 </script>
 
 
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-  <h1 class="page-header"><?php echo($server_name);?></h1>
+
   <div style="float:left;">
 	  <ul id="operators" class="consoleOperator">
 	    <li id="say-tab" class="active"><a href="javascript:changeTab('say-tab')">Say</a></li>

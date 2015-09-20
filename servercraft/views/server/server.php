@@ -5,19 +5,12 @@ require_once("classes/Server.php");
 require_once("classes/Properties.php");
 require_once("classes/HtmlCreator.php");
 
-$server_handle = new Server();
 $properties_handle = new Properties();
 
 foreach ($properties_handle->messages as $key => $value) {
   echo("<script type='text/javascript'>alert('$value');</script>");
 }
 foreach ($properties_handle->errors as $key => $value) {
-  echo("<script type='text/javascript'>alert('Error: $value');</script>");
-}
-foreach ($server_handle->messages as $key => $value) {
-  echo("<script type='text/javascript'>alert('$value');</script>");
-}
-foreach ($server_handle->errors as $key => $value) {
   echo("<script type='text/javascript'>alert('Error: $value');</script>");
 }
 
@@ -67,12 +60,7 @@ function changeFormAction(){
   document.getElementById("general-form").submit();
 }
 </script>
-<script src="scripts/commands.js"></script>
 
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-  <h1 class="page-header">
-    <?php echo($server_name);?>
-  </h1>
   <div class="table-responsive">
   <form id="general-form" method="post" action=<?php echo("server.php?server=".$server_name);?>>
     <input type="hidden" name="nameUpdate" value="nameUpdate">
@@ -82,25 +70,14 @@ function changeFormAction(){
     <table class="table table-striped" id="server-generar" style="width:auto">
       <tbody>
         <tr>
-          <td class="firstRow"></td>
+          <td class="firstRow">Name</td>
           <td class="secondRow">
-            <div id="buttons">
-              <button type="button" id="start_button" onclick="actionServer('start')">Start</button>
-              <button type="button" id="stop_button" onclick="actionServer('stop')">Stop</button>
-              <button type="button" id="restart_button">Restart</button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Name</td>
-          <td>
             <input name="name" id="name" type="text" value=<?php echo($server_name);?>>
           </td>
         </tr>
         <tr>
           <td>Status</td>
           <td id="status"><?php echo($status)?></td>
-          <script type="text/javascript">disableButtons();</script>
         </tr>
         <tr>
           <td></td>

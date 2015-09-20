@@ -1,7 +1,8 @@
 <?php
 require_once("php/install_functions.php");
 if(isset( $_POST['step'] ) || !dbConfigExists() || !canConnect() || !isPopulated()){
-	require_once("install.php");
+	#echo("hola");
+	require_once("views/installation/install.php");
 	die();
 }
 

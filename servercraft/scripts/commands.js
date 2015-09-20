@@ -1,5 +1,5 @@
 function disableButtons(){
-  var status = document.getElementById('status').innerHTML
+  var status = document.getElementById('_status').innerHTML
   if(status=="offline"){
     document.getElementById('stop_button').disabled=true;
     document.getElementById('restart_button').disabled=true;
@@ -37,17 +37,24 @@ function actionServer(action){
     }
   }
 
-  var server = document.getElementById("name").value;
+  var server = document.getElementById("server_name").innerHTML;
   var url = "php/scripts/command.php?server="+server+"&"+action; 
-
   xmlhttp.open("GET", url, true);
   xmlhttp.send();
+}
+
+function changeDOMStatus(id, status){
+  if(!!document.getElementById(id)){
+    document.getElementById(id).innerHTML=status;
+  }
 }
 
 function manageResult(action, res){
   if(action=="start"){
     if(res=="success\n"){
-      document.getElementById("status").innerHTML="online";
+      document.getElementById("status_img").src="res/online.png";
+      document.getElementById("_status").innerHTML="online";
+      changeDOMStatus("status", "online");
       disableButtons();
       alert("Server is now running!");
     }
@@ -58,7 +65,9 @@ function manageResult(action, res){
   }
   else if(action=="stop"){
     if(res=="success\n"){
-      document.getElementById("status").innerHTML="offline";
+      document.getElementById("status_img").src="res/offline.png";
+      document.getElementById("_status").innerHTML="offline";
+      changeDOMStatus("status", "offline");
       disableButtons();
       alert("Server is now stopped!");
     }

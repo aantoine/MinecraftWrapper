@@ -19,8 +19,7 @@ $table = $html_creator->createInputTable($properties, "server-prop","table table
 
 
 
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-  <h1 class="page-header"><?php echo($server_name);?></h1>
+  
   <form id= "save-form" method="post" action=<?php echo("server.php?server=".$server_name."&properties");?>>
   	<input type="hidden" name="propertiesUpdate" id="propertiesUpdate" value="propertiesUpdate">
     <div class="table-responsive">

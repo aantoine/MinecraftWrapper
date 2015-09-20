@@ -23,6 +23,9 @@ elseif (isset($_GET["console"])) 	$console=True;
 //NAV
 require_once("views/server/nav.php");
 
+//COMUN CONTENT
+require_once("views/server/header.php");
+
 
 //CONTENT
 if (isset($_GET["properties"]))	 require_once("views/server/properties.php");

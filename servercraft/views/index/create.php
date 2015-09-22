@@ -10,12 +10,46 @@ $jar_selector = $html_creator->createSelector($jars, '', 'jar_prop', True, 'widt
 
 ?>
 
+<script type="text/javascript">
+function validateForm() {
+    var x = document.forms["general-form"]["name"].value;
+    if (x == null || x == "") {
+        alert("Error: Name must be filled out");
+        return false;
+    }
+    if(x.length>60){
+      alert("Error: Invalid Name");
+      return false;
+    }
+
+    var xms = document.forms["general-form"]["xms_prop"].value;
+    if (xms == null || xms == "") {
+        alert("Error: Xms must be filled out");
+        return false;
+    }
+    if (isNaN(xms) || xms<0 || xms>20480) {
+        alert("Error: Xms must be a positive numeric value");
+        return false;
+    }
+
+    var xmx = document.forms["general-form"]["xmx_prop"].value;
+    if (xmx == null || xmx == "") {
+        alert("Error: Xmx must be filled out");
+        return false;
+    }
+    if (isNaN(xmx) || xmx<0 || xmx>20480) {
+        alert("Error: Xmx must be a positive numeric value");
+        return false;
+    }
+}
+</script>
+
 
 
 
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
   <h1 class="page-header">Create new Server</h1>
-  <form id="general-form" method="post" action="index.php">
+  <form id="general-form" method="post" action="index.php" onsubmit="return validateForm()">
     <input type="hidden" name="createServer" value="createServer">
 
     <h4><u>General</u></h4>

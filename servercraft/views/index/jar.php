@@ -62,11 +62,11 @@ function validateForm() {
 
   <h1 class="page-header">Add new Jar</h1>
   <form id="form" action="#" method="POST">
-	  <table class="table table-striped">
+	  <table class="table table-striped" style="width:auto">
 	  	<tbody>
 		    <tr>
-		      <td>Select Jar</td>
-		      <td>
+		      <td class="firstRow">Select Jar</td>
+      		  <td class="secondRow">
 		        <input id="uploadInput" type="text" name="myFiles" style="display:inline" 
 		        	placeholder="Jar file Url">
 		      </td>

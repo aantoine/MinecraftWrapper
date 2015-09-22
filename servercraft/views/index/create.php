@@ -52,7 +52,6 @@ function validateForm() {
   <form id="general-form" method="post" action="index.php" onsubmit="return validateForm()">
     <input type="hidden" name="createServer" value="createServer">
 
-    <h4><u>General</u></h4>
     <table class="table table-striped" id="server-generar" style="width:auto">
       <tbody>
         <tr>

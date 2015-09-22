@@ -37,7 +37,8 @@
 		    <tr>
 		      <td>Select Jar</td>
 		      <td>
-		        <input id="uploadInput" type="text" name="myFiles" style="display:inline">
+		        <input id="uploadInput" type="text" name="myFiles" style="display:inline" 
+		        	placeholder="Jar file Url">
 		      </td>
 		    </tr>
 		    <tr>

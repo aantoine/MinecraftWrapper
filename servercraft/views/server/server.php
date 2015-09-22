@@ -53,11 +53,52 @@ $online_selector = $html_creator->createSelector($online,
                        $properties['online-mode'], 'online-mode',False,'width:175px');
 ?>
 
+<script type="text/javascript"> 
+
+function stopRKey(evt) { 
+  var evt = (evt) ? evt : ((event) ? event : null); 
+  var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+  if ((evt.keyCode == 13) && (node.type=="text"))  {return false;} 
+} 
+
+document.onkeypress = stopRKey; 
+
+</script>
+
 <script type="text/javascript">
 function changeFormAction(){
   var action = document.getElementById("name").value;
-  document.getElementById("general-form").action="server.php?server="+action;
-  document.getElementById("general-form").submit();
+  var actualServer = document.getElementById("old_name").value;
+
+  if(action==actualServer){ 
+    return;
+  }
+
+  //First validate that the name is unique!
+
+  var xmlhttp;
+  if (window.XMLHttpRequest) {
+    xmlhttp=new XMLHttpRequest();
+  }else{
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+
+  xmlhttp.onreadystatechange = function(){
+    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+      if(xmlhttp.responseText=="success"){
+        document.getElementById("general-form").action="server.php?server="+action;
+        document.getElementById("general-form").submit();
+      }
+      else{
+        alert("Server name must be unique!");
+      }
+    }
+  }
+
+  var server = document.getElementById("server_name").innerHTML;
+  var url = "php/checkServer.php?server="+action; 
+  xmlhttp.open("GET", url, true);
+  xmlhttp.send();
 }
 </script>
 

@@ -10,7 +10,7 @@
  	# 4. imprimir mensaje (exito o error)
 
 	if (!isset($_POST['myFile'])) {
-		echo("No file to upload");
+		echo("Error: No file to upload");
 	    die();
 	}
 
@@ -20,7 +20,7 @@
 	$db_connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 	if (!$db_connection->set_charset("utf8")){
-        echo "Database connection refused";
+        echo "Error: Database connection refused";
 	    die();
     }
 
@@ -36,26 +36,34 @@
 	$upload = file_put_contents($temp_file, file_get_contents($url));
 	//check success
 	if(!$upload){
-		echo "Error: $temp_file";
+		echo "Error: Unable to upload selected file";
+		die();
 	}
 
 	$finfo = finfo_open(FILEINFO_MIME_TYPE);
 	$fType = finfo_file($finfo, $temp_file) ;
 	finfo_close($finfo);
 	if(($fType!="application/jar" && $fType!="application/zip") || !isJarFile($temp_file)){
-		echo("Error: $fType");
+		echo("Error: Uploaded file is not a Minecraft file");
 		unlink($temp_file);
 		die();
 	}
 
 	$target_file = $mc_path."/jars/".$fName;
 	if (file_exists($target_file)) {
-	    echo "Jar already exists";
+	    echo "Error: Uploaded file already exists";
 	    unlink($temp_file);
 	    die();
 	}
 
-	$description = $db_connection->real_escape_string(strip_tags($_POST["fileDescription"], ENT_QUOTES));
+	$description = $_POST["fileDescription"];
+	$description = $db_connection->real_escape_string(strip_tags($description, ENT_QUOTES));
+	if(strlen($description)<=0 || strlen($description)>=64){
+		echo "Error: Invalid jar file name";
+	    unlink($temp_file);
+	    die();
+	}
+
 	$upload_sql = "INSERT INTO jars (jar_name, file) VALUES('$description', '$fName');";
 	
 	if (rename($temp_file, $target_file)){
@@ -63,7 +71,7 @@
 		echo("Selected Jar file has been uploaded.");
 	}	
 	else{
-		echo("Error writing the file into the jars folder");
+		echo("Error: Unable to upload selected file");
 	}
 
 	unlink($temp_file);

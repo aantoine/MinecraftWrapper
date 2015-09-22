@@ -234,34 +234,59 @@ class Server
             $sql = "SELECT * FROM servers WHERE server_name='".$name."';";
             $query_check_server_name = $this->db_connection->query($sql);
 
-            if ($query_check_server_name->num_rows == 1) {
+            if ($query_check_server_name->num_rows >= 1) {
                 $this->errors[] = "Server name must be unique!";
+                return 0;
             } else {
                 $server = $this->db_connection->real_escape_string(strip_tags($_POST["old_name"], ENT_QUOTES));
                 $sql = "UPDATE servers SET server_name='".$name."' WHERE server_name='".$server."';";
                 #echo($sql);
                 $query_jars = $this->db_connection->query($sql);
+                return 1;
             }
         }
         else{
             $this->errors[] = "Sorry, no database connection.";
         }
+        return 0;
     }
 
     private function createServer(){
-        //Verify data!! TODO
-
-
-        //Add row to the server table
+        //Verify data
         $name = $this->db_connection->real_escape_string(strip_tags($_POST["name"], ENT_QUOTES));
         $jar = $this->db_connection->real_escape_string(strip_tags($_POST["jar_prop"], ENT_QUOTES));
         $xms = $this->db_connection->real_escape_string(strip_tags($_POST["xms_prop"], ENT_QUOTES));
         $xmx = $this->db_connection->real_escape_string(strip_tags($_POST["xmx_prop"], ENT_QUOTES));
 
+        if(strlen($name)==0 || strlen($name)>60){
+            $this->errors[] = "Invalid Server name"; return;
+        }
+        if(!is_numeric($xms) || intval($xms)>20480 || intval($xms)<=0){
+            $this->errors[] = "Invalid Xms option"; return;
+        }
+        if(!is_numeric($xmx) || intval($xmx)>20480 || intval($xmx)<=0){
+            $this->errors[] = "Invalid Xmx option"; return;
+        }
+        if(intval($xms) > intval($xmx)){
+            $this->errors[] = "Xms value must be smaller than Xmx"; return;
+        }
+
+        $dir_sql = "SELECT server_id AS dir FROM servers WHERE server_name='".$name."';";
+        $query = $this->db_connection->query($dir_sql);
+        $row_cnt = mysqli_num_rows($query);
+        if($row_cnt>0){
+            $this->errors[] = "Server Name already in use"; return;
+        }
+
+        //Add row to the server table
         $jar_sql = "SELECT jar_id AS id FROM jars WHERE file='".$jar."';";
         $jar_query = $this->db_connection->query($jar_sql);
+        $row_cnt = mysqli_num_rows($jar_query);
+        if($row_cnt==0){
+            $this->errors[] = "Invalid Jar option"; return;
+        }
         $res = $jar_query->fetch_assoc();
-        $jar_id = $res['id'];       
+        $jar_id = $res['id'];
 
         $server_sql = "INSERT INTO servers (server_name, server_jar, server_xmx, server_xms, server_world) VALUES('$name', $jar_id, $xmx, $xms, 'world');";
         $query_server = $this->db_connection->query($server_sql);
@@ -279,21 +304,19 @@ class Server
 
         $o1=substr($this->turnOn($name), 0, -1);
         //Creating a server takes time...
-        sleep(10);
+        sleep(15);
         //Show succes or failure message
         if(strcmp($o1, "success")==0){
-            sleep(3);
             $o2=substr($this->turnOff($name, 1), 0, -1);
             if(strcmp($o2, "success")==0){
                 $this->messages[] = "Server created successfully";
             }
             else{
-                $this->errors[] = "Couldnt stop new Server!";
+                $this->errors[] = "Couldnt stop new Server!, $o2";
             }
         }
         else{
-            $this->errors[] = "Couldnt create Server!";
-            echo $o1;
+            $this->errors[] = "Couldnt create Server!, $o1";
         }
     }
 

@@ -1,8 +1,3 @@
-<?php
-  
-?>
-
-
 <div class="col-sm-3 col-md-2 sidebar">
   <!--<script src="scripts/views.js"></script>-->
   <ul class="nav nav-sidebar">
@@ -29,7 +24,7 @@
         echo("<li class='active'><a>Add Jar<span class='sr-only'>(current)</span></a></li>");
       }
       else{
-        echo("<li><a href='index.php?jar'>Add Jars</a></li>"); 
+        echo("<li><a href='index.php?jar'>Add Jar</a></li>"); 
       }
     ?>
   </ul>
